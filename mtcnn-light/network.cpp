@@ -174,6 +174,8 @@ void maxPooling(const pBox *pbox, pBox *Matrix, int kernelSize, int stride){
     mydataFmt *pIn;
     mydataFmt *ptemp;
     mydataFmt maxNum = 0;
+    mydataFmt *pbox_max;
+    pbox_max = pbox->pdata + pbox->channel*pbox->height*pbox->width;
     if((pbox->width-kernelSize)%stride==0){
         for (int row = 0; row< Matrix->height; row ++){
             for (int col = 0; col < Matrix->width; col++){
@@ -183,7 +185,8 @@ void maxPooling(const pBox *pbox, pBox *Matrix, int kernelSize, int stride){
                     maxNum = *ptemp;
                     for (int kernelRow = 0; kernelRow < kernelSize; kernelRow++){
                         for(int i=0;i<kernelSize;i++){
-                            if(maxNum<*(ptemp+i+kernelRow*pbox->width))maxNum=*(ptemp+i+kernelRow*pbox->width);
+			    if((ptemp+i+kernelRow*pbox->width) <=pbox_max)
+                                if(maxNum<*(ptemp+i+kernelRow*pbox->width))maxNum=*(ptemp+i+kernelRow*pbox->width);
                         }
                     }
                     *(p+channel*Matrix->height*Matrix->width) = maxNum;
